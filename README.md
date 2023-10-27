@@ -1,10 +1,10 @@
 # heinsen_sequence
 
-Sample code for computing the sequence $x_t = a_t x_{t-1} + b_t$ in parallel, given $t = (1, 2, \dots, n)$, $a_t \in \mathbb{R}^n$, $b_t \in \mathbb{R}^n$, and initial value $x_0 \in \mathbb{R}$, as described in "Parallelization of an Ubiquitious Sequential Computation" (Heinsen, 2022).
+Sample code for computing the sequence $x_t = a_t x_{t-1} + b_t$ in parallel, given $t = (1, 2, \dots, n)$, $a_t \in \mathbb{R}^n$, $b_t \in \mathbb{R}^n$, and initial value $x_0 \in \mathbb{R}$. See "Parallelization of an Ubiquitious Sequential Computation" (Heinsen, 2022).
 
-Sequences of this form are ubiquitous in science and engineering. For example, in the natural sciences, these sequences can model quantities or populations that decay or grow by a varying rate $a_t > 0$ between net inflows or outflows $b_t$ at each time step $t$. In economics and finance, these sequences can model investments that earn a different rate of return $a_t = (1 + r_t)$ between net deposits or withdrawals $b_t$ at the beginning of each time period $t$. In engineering applications, these sequences are often low-level components of larger models, *e.g.*, linearized recurrent neural networks (LRNNs) whose layers decay token features in a sequence of tokens.
+Sequences of this form are ubiquitous in science and engineering. For example, in the natural sciences, these sequences model quantities or populations that decay or grow by a varying rate $a_t > 0$ between net inflows or outflows $b_t$ at each time step $t$. In economics and finance, these sequences model investments that earn a different rate of return $a_t = (1 + r_t)$ between net deposits or withdrawals $b_t$ at the beginning of each time period $t$. In engineering applications, these sequences are often low-level components of larger models, *e.g.*, linearized recurrent neural networks (LRNNs) whose layers decay token features in a sequence of tokens.
 
-It's not immediately obvious how one would compute all elements of the sequence in parallel, because each element is a non-associative transformation of the previous one. In practice, we routinely see software code that computes sequences of this form one element at a time. Read on to find out how to compute all elements in parallel!
+It's not immediately obvious how one would compute all elements of the sequence in parallel, because each element is a non-associative transformation of the previous one. In practice, it's common to come across code that computes sequences of this form one element at a time. Read on to find out how to compute them in parallel!
 
 All snippets of code assume you have a working installation of Python 3.8+ with PyTorch 2.1+.
 
