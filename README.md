@@ -71,7 +71,7 @@ def compute_in_parallel_special_case(log_coeffs, log_values):
     a_star = F.pad(torch.cumsum(log_coeffs, dim=-1), (1, 0))              # eq (2) in paper
     log_x0_plus_b_star = torch.logcumsumexp(log_values - a_star, dim=-1)  # eq (7) in paper
     log_x = a_star + log_x0_plus_b_star                                   # eq (1) in paper
-    return torch.exp(log_x)                                               #
+    return torch.exp(log_x)                                               # already a float
 
 device = 'cuda:0'     # change as necessary
 seq_len = 10_000_000  # change as you wish
