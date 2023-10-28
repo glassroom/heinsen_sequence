@@ -59,7 +59,7 @@ x = compute_in_parallel(
 ```
 
 
-## Special Case: If No Inputs are Negative
+## Special Case: If No Inputs Are Negative
 
 If no inputs are negative, we don't need to cast them to complex numbers before computing their logarithms:
 
