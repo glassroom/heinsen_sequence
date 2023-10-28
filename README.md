@@ -28,7 +28,7 @@ seq_len = 10_000_000  # change as you wish
 coeffs = torch.randn(seq_len, device=device)
 values = torch.randn(1 + seq_len, device=device)  # includes initial value
 
-y = naively_compute_sequentially(coeffs, values)  # includes initial value
+x = naively_compute_sequentially(coeffs, values)  # includes initial value
 ```
 
 
@@ -52,7 +52,7 @@ seq_len = 10_000_000  # change as you wish
 coeffs = torch.randn(seq_len, device=device)
 values = torch.randn(1 + seq_len, device=device)
 
-y = compute_in_parallel(
+x = compute_in_parallel(
     log_coeffs=coeffs.to(dtype=torch.complex64).log(),  # logs of coeffs < 0 are complex
     log_values=values.to(dtype=torch.complex64).log(),  # logs of values < 0 are complex
 )
@@ -79,7 +79,7 @@ seq_len = 10_000_000  # change as you wish
 coeffs = torch.rand(seq_len, device=device)          # all coeffs >= 0
 values = torch.rand(1 + seq_len, device=device) * 3  # all values >= 0
 
-y = compute_in_parallel_special_case(
+x = compute_in_parallel_special_case(
     log_coeffs=coeffs.log(),  # no need to cast to complex
     log_values=values.log(),  # no need to cast to complex
 )
