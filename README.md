@@ -31,6 +31,8 @@ values = torch.randn(1 + seq_len, device=device)  # includes initial value
 x = naively_compute_sequentially(coeffs, values)  # includes initial value
 ```
 
+Note: Even if you rewrite the above snippet of interpreted Python code as efficient GPU code (say, with [Triton](https://triton-lang.org)), execution will still be slow, because all elements are computed sequentially by a single thread (*e.g.*, in a single CUDA block).
+
 
 ## General Case: If Inputs Can Be Positive or Negative
 
