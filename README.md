@@ -34,9 +34,14 @@ x = naively_compute_sequentially(coeffs, values)  # includes initial value
 Note: Even if you rewrite the above snippet of interpreted Python code as efficient GPU code (say, with [Triton](https://triton-lang.org)), execution will still be slow, because all elements are computed sequentially (*e.g.*, in a single CUDA block).
 
 
-## General Case: If Inputs Can Be Positive or Negative
+## Now Try the Parallel Approach
 
-The following snippet of code executes the same computations *in parallel*. Copy and paste it to execute it. The difference in execution time will be quickly evident:
+The snippets of code below execute the same computations *in parallel* -- or more precisely, as a composition of two [prefix sums](https://en.wikipedia.org/wiki/Prefix_sum), each of which is executable in parallel. Copy and paste the code to run it. The difference in execution time will be quickly evident.
+
+
+### General Case: If Any Inputs Are Negative
+
+If any inputs are negative, we must first cast them to complex numbers before computing their logarithms:
 
 ```python
 import torch
@@ -61,7 +66,7 @@ x = compute_in_parallel(
 ```
 
 
-## Special Case: If No Inputs Are Negative
+### Special Case: If No Inputs Are Negative
 
 If no inputs are negative, we don't need to cast them to complex numbers before computing their logarithms:
 
