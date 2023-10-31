@@ -36,7 +36,7 @@ Note: Even if you rewrite the above snippet of interpreted Python code as effici
 
 ## Now Try the Parallel Approach
 
-The snippets of code below execute the same computations *in parallel* -- or more precisely, as a composition of two [prefix sums](https://en.wikipedia.org/wiki/Prefix_sum), each of which is executable in parallel. (See also [this post on implementing parallel prefix sum in CUDA](https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda).) Copy and paste the code to run it. The difference in execution time will be quickly evident.
+The snippets of code below execute the same computations *in parallel* -- or more precisely, as a composition of two [prefix sums](https://en.wikipedia.org/wiki/Prefix_sum), each of which is executable in parallel. (See also [this post on implementing parallel prefix sum in CUDA](https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda).) The first snippet is for the general case in which $a_t \in \mathbb{R}^n$, $b_t \in \mathbb{R}^n$, and initial value $x_0 \in \mathbb{R}$. The second snippet is for the special case in which none of the inputs are negative. Copy and paste each snippet of code to run it. The difference in execution time compared to sequential computation will be quickly evident. For details on how parallelization works, including its mathematical proof, please see our preprint.
 
 
 ### General Case: If Any Inputs Are Negative
