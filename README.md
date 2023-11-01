@@ -11,7 +11,7 @@ All snippets of code assume you have a working installation of Python 3.8+ with 
 
 ## First, Try the Sequential Approach
 
-The following snippet of code computes 10,000,000 elements, one element at a time. Copy and paste it to execute it. Warning: It will be painfully slow. If you get tired of waiting for it to finish, interrupt execution:
+The following snippet of code computes 10,000,000 elements, one element at a time. Copy and paste it to execute it. Warning: It will be painfully slow. Execution time is linear in the number of elements, $\mathcal{O}(n)$. If you get tired of waiting, interrupt execution:
 
 ```python
 import torch
@@ -31,12 +31,12 @@ values = torch.randn(1 + seq_len, device=device)  # includes initial value
 x = naively_compute_sequentially(coeffs, values)  # includes initial value
 ```
 
-Note: Even if you rewrite the above snippet of interpreted Python code as efficient GPU code (say, with [Triton](https://triton-lang.org)), execution will still be slow, because all elements are computed sequentially (*e.g.*, in a single CUDA block).
+Note: Even if you rewrite the above snippet of interpreted Python code as efficient GPU code (say, with [Triton](https://triton-lang.org)), execution will still be slow, because all elements are computed sequentially, which is inefficient in a GPU.
 
 
 ## Now Try the Parallel Approach
 
-The snippets of code below execute the same computations *in parallel* -- or more precisely, as a composition of two [prefix sums](https://en.wikipedia.org/wiki/Prefix_sum), each of which is executable in parallel. (See also [this post on implementing parallel prefix sum in CUDA](https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda).) The first snippet is for the general case in which $a_t \in \mathbb{R}^n$, $b_t \in \mathbb{R}^n$, and initial value $x_0 \in \mathbb{R}$. The second snippet is for the special case in which none of the inputs are negative. Copy and paste each snippet of code to run it. The difference in execution time compared to sequential computation will be quickly evident. For details on how parallelization works, including its mathematical proof, please see our preprint.
+The snippets of code below execute the same computations *in parallel* -- or more precisely, as a composition of two [prefix sums](https://en.wikipedia.org/wiki/Prefix_sum), each of which is executable in parallel. (See also [this post on implementing parallel prefix sum in CUDA](https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda).) The first snippet is for the general case in which $a_t \in \mathbb{R}^n$, $b_t \in \mathbb{R}^n$, and initial value $x_0 \in \mathbb{R}$. The second snippet is for the special case in which none of the inputs are negative. Copy and paste each snippet of code to run it. The difference in execution time compared to sequential computation will be quickly evident. Given $n$ parallel processors, execution time is logarithmic in the number of elements, $\mathcal{O}(\log n)$. For details on how parallelization works, including its mathematical proof, please see our preprint.
 
 
 ### General Case: If Any Inputs Are Negative
