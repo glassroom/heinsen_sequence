@@ -93,7 +93,7 @@ x = compute_in_parallel_special_case(
 ```
 
 
-## Compared to Blelloch's Classic Work on First-Order Recurrence Relations
+## Compared to Blelloch's Classic Work
 
 See [this thread](https://github.com/glassroom/heinsen_sequence/issues/1).
 
