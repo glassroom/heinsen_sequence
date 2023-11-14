@@ -1,6 +1,6 @@
 # heinsen_sequence
 
-Sample code for computing the sequence $x_t = a_t x_{t-1} + b_t$ in parallel, given $t = (1, 2, \dots, n)$, $a_t \in \mathbb{R}^n$, $b_t \in \mathbb{R}^n$, and initial value $x_0 \in \mathbb{R}$. See ["Parallelization of an Ubiquitious Sequential Computation" (Heinsen, 2023)](https://github.com/glassroom/heinsen_sequence/blob/main/preprint.pdf).
+Sample code for computing the sequence $x_t = a_t x_{t-1} + b_t$ in parallel, given $t = (1, 2, \dots, n)$, $a_t \in \mathbb{R}^n$, $b_t \in \mathbb{R}^n$, and initial value $x_0 \in \mathbb{R}$. See ["Parallelization of an Ubiquitious Sequential Computation" (Heinsen, 2023)](http://arxiv.org/abs/2311.06281).
 
 Sequences of this form are ubiquitous in science and engineering. For example, in the natural sciences, these sequences model quantities or populations that decay or grow by a varying rate $a_t > 0$ between net inflows or outflows $b_t$ at each time step $t$. In economics and finance, these sequences model investments that earn a different rate of return $a_t = (1 + r_t)$ between net deposits or withdrawals $b_t$ at the beginning of each time period $t$. In engineering applications, these sequences are often low-level components of larger models, *e.g.*, linearized recurrent neural networks (LRNNs) whose layers decay token features in a sequence of tokens.
 
@@ -96,10 +96,13 @@ x = compute_in_parallel_special_case(
 ## Citing
 
 ```
-@misc{heinsen2023sequence,
-      title={Parallelization of an Ubiquitious Sequential Computation},
+@misc{heinsen2023parallelization,
+      title={Parallelization of an Ubiquitous Sequential Computation}, 
       author={Franz A. Heinsen},
       year={2023},
+      eprint={2311.06281},
+      archivePrefix={arXiv},
+      primaryClass={cs.DS}
 }
 ```
 
