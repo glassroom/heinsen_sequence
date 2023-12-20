@@ -102,7 +102,7 @@ See [this thread](https://github.com/glassroom/heinsen_sequence/issues/1).
 
 ```
 @misc{heinsen2023parallelization,
-      title={Efficient Parallelization of an Ubiquitous Sequential Computation}, 
+      title={Efficient Parallelization of a Ubiquitous Sequential Computation}, 
       author={Franz A. Heinsen},
       year={2023},
       eprint={2311.06281},
