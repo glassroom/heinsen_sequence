@@ -102,9 +102,9 @@ x = compute_in_parallel_special_case(
 
 ## Considerations for Using in Production
 
-The snippets of code above are meant to be easy-to-follow recipes. For use in production, make sure to compute all logarithms with the most efficient and numericaly stable methods available. For example, if the coefficients are gating probabilities computed from input logits, you should use `F.logsigmoid(logits)` instead of `torch.log(F.sigmoid(logits))` to compute the log-coefficients.
+The snippets of code above are meant to be *easy-to-follow recipes*. For use in production, make sure to compute all logarithms with the most efficient and numericaly stable methods available. For example, if the coefficients are gating probabilities computed from given logits, you should use `F.logsigmoid(logits)` instead of `torch.log(F.sigmoid(logits))` to compute the log-coefficients. If one of the input sequences has no negative numbers, don't cast it to complex in advance; instead, wait to cast its logarithms until after they have been summed. If you are using lower precision, don't assume numerical stability; instead, make sure both input sequences will always be within acceptable bounds. Use your common sense.
 
-In certain production environments, it may be more efficient to represent each complex number as a (float, int) tuple to take advantage of the fact that all sums of imaginary components in our proposed method are multiples of $i \pi$, given that the logarithm of a negative number is equal to the logarithm of its absolute value plus $i \pi$ (see [here](https://math.stackexchange.com/questions/2089690/log-of-a-negative-number#2089703)).
+In certain production environments, it may be more efficient to represent each complex number as a (float, int) tuple to take advantage of the fact that all sums of imaginary components in our proposed method are multiples of $i \pi$, given that the logarithm of a negative number $-|x|$ is equal to the logarithm of its absolute value plus $i \pi$: $\log(-|x|) = \log(|x|) + i \pi$ (see [here](https://math.stackexchange.com/questions/2089690/log-of-a-negative-number)). Keep in mind that any possible gains in efficiency will be offset by greater implementation complexity.
 
 As always, you should test all available options to find out which one will work best for your use case.
 
