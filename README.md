@@ -25,21 +25,23 @@ def naively_compute_sequentially(coeffs, values):
 device = 'cuda:0'     # change as necessary
 seq_len = 10_000_000  # change as you wish
 
+# Generate some random input data:
 coeffs = torch.randn(seq_len, device=device)
 values = torch.randn(1 + seq_len, device=device)  # includes initial value
 
+# Compute the sequence:
 x = naively_compute_sequentially(coeffs, values)  # includes initial value
 ```
 
 Note: Even if you rewrite the above snippet of interpreted Python code as efficient GPU code (say, with [Triton](https://triton-lang.org)), execution will still be slow, because all elements are computed sequentially, which is inefficient in a GPU.
 
 
-## Now Try the Parallel Approach
+## Now Try Our Proposed Parallel Approach
 
 The snippets of code below execute the same computations *in parallel* -- or more precisely, as a composition of two [prefix sums](https://en.wikipedia.org/wiki/Prefix_sum), each of which is executable in parallel. (See also [this post on implementing parallel prefix sum in CUDA](https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda).) The first snippet is for the general case in which $a_t \in \mathbb{R}^n$, $b_t \in \mathbb{R}^n$, and initial value $x_0 \in \mathbb{R}$. The second snippet is for the special case in which none of the inputs are negative. Copy and paste each snippet of code to run it. The difference in execution time compared to sequential computation will be quickly evident. Given $n$ parallel processors, execution time is logarithmic in the number of elements, $\mathcal{O}(\log n)$. For details on how parallelization works, including its mathematical proof, please see our preprint.
 
 
-### General Case: If Any Inputs Are Negative
+### General Case: If Any Input Can Be Negative
 
 If any inputs are negative, we must first cast them to complex numbers before computing their logarithms:
 
@@ -56,13 +58,16 @@ def compute_in_parallel(log_coeffs, log_values):
 device = 'cuda:0'     # change as necessary
 seq_len = 10_000_000  # change as you wish
 
-coeffs = torch.randn(seq_len, device=device)
-values = torch.randn(1 + seq_len, device=device)
+# Generate some random input data:
+coeffs = torch.randn(seq_len, device=device); 
+coeffs = coeffs.masked_fill(coeffs == 0, 1e-5)    # eps for numerical stability
+values = torch.randn(1 + seq_len, device=device)  # negative or positive values
 
+# Compute the sequence:
 x = compute_in_parallel(
     log_coeffs=coeffs.to(dtype=torch.complex64).log(),  # logs of coeffs < 0 are complex
     log_values=values.to(dtype=torch.complex64).log(),  # logs of values < 0 are complex
-)
+)                                                       # output includes initial value
 ```
 
 
@@ -83,14 +88,25 @@ def compute_in_parallel_special_case(log_coeffs, log_values):
 device = 'cuda:0'     # change as necessary
 seq_len = 10_000_000  # change as you wish
 
-coeffs = torch.rand(seq_len, device=device)          # all coeffs >= 0
+# Generate some random input data:
+coeffs = torch.rand(seq_len, device=device) + 1e-5   # eps for numerical stability
 values = torch.rand(1 + seq_len, device=device) * 3  # all values >= 0
 
+# Compute the sequence:
 x = compute_in_parallel_special_case(
     log_coeffs=coeffs.log(),  # no need to cast to complex
     log_values=values.log(),  # no need to cast to complex
-)
+)                             # output includes initial value
 ```
+
+
+## Considerations for Using in Production
+
+The snippets of code above are meant to be easy-to-follow recipes. For use in production, make sure to compute all logarithms with the most efficient and numericaly stable methods available. For example, if the coefficients are gating probabilities computed from input logits, you should use `F.logsigmoid(logits)` instead of `torch.log(F.sigmoid(logits))` to compute the log-coefficients.
+
+In certain production environments, it may be more efficient to represent each complex number as a (float, int) tuple to take advantage of the fact that all sums of imaginary components in our proposed method are multiples of $i \pi$, given that the logarithm of a negative number is equal to the logarithm of its absolute value plus $i \pi$ (see [here](https://math.stackexchange.com/questions/2089690/log-of-a-negative-number#2089703)).
+
+As always, you should test all available options to find out which one will work best for your use case.
 
 
 ## Compared to Blelloch's Classic Work
