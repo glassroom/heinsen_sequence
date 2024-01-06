@@ -100,6 +100,11 @@ x = compute_in_parallel_special_case(
 ```
 
 
+## Caching State for Incremental Computation
+
+For computing the sequence incrementally, chunk by chunk, we recommend you cache each chunk's final log-element, `log_x[-1]`, and use it as the subsequent chunk's initial log-value, `log_values[0]`. Caching state in the domain of logarithms is more numerically stable.
+
+
 ## Considerations for Using in Production
 
 The snippets of code above are meant to be *easy-to-follow recipes*. For use in production, make sure to compute all logarithms with the most efficient and numericaly stable methods available. For example, if the coefficients are gating probabilities computed from given logits, you should use `F.logsigmoid(logits)` instead of `torch.log(F.sigmoid(logits))` to compute the log-coefficients. If one of the input sequences has no negative numbers, don't cast it to complex in advance; instead, wait to cast its logarithms until after they have been summed. If you are using lower precision, don't assume numerical stability; instead, make sure both input sequences will always be within acceptable bounds. Use your common sense.
