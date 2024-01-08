@@ -56,7 +56,7 @@ def complex_log(float_input, eps=1e-6):
     return torch.complex(real, imag)
 
 def compute_in_parallel(coeffs, values):
-    log_coeffs=complex_log(coeffs)
+    log_coeffs = complex_log(coeffs)
     log_values = complex_log(values)
     a_star = F.pad(torch.cumsum(log_coeffs, dim=-1), (1, 0))              # eq (2) in paper
     log_x0_plus_b_star = torch.logcumsumexp(log_values - a_star, dim=-1)  # eq (7) in paper
