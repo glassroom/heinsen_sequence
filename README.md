@@ -43,13 +43,21 @@ The snippets of code below execute the same computations *in parallel* -- or mor
 
 ### General Case: If Any Input Can Be Negative
 
-If any inputs are negative, we must first cast them to complex numbers before computing their logarithms:
+If any inputs are negative, their logarithms are complex numbers:
 
 ```python
 import torch
 import torch.nn.functional as F
 
-def compute_in_parallel(log_coeffs, log_values):
+def complex_log(float_input, eps=1e-6):
+    eps = float_input.new_tensor(eps)
+    real = float_input.abs().maximum(eps).log()
+    imag = (float_input < 0).to(float_input.dtype) * torch.pi
+    return torch.complex(real, imag)
+
+def compute_in_parallel(coeffs, values):
+    log_coeffs=complex_log(coeffs)
+    log_values = complex_log(values)
     a_star = F.pad(torch.cumsum(log_coeffs, dim=-1), (1, 0))              # eq (2) in paper
     log_x0_plus_b_star = torch.logcumsumexp(log_values - a_star, dim=-1)  # eq (7) in paper
     log_x = a_star + log_x0_plus_b_star                                   # eq (1) in paper
@@ -59,27 +67,25 @@ device = 'cuda:0'     # change as necessary
 seq_len = 10_000_000  # change as you wish
 
 # Generate some random input data:
-coeffs = torch.randn(seq_len, device=device); 
-coeffs = coeffs.masked_fill(coeffs == 0, 1e-5)    # eps for numerical stability
+coeffs = torch.randn(seq_len, device=device);     # positive or negative values
 values = torch.randn(1 + seq_len, device=device)  # negative or positive values
 
 # Compute the sequence:
-x = compute_in_parallel(
-    log_coeffs=coeffs.to(dtype=torch.complex64).log(),  # logs of coeffs < 0 are complex
-    log_values=values.to(dtype=torch.complex64).log(),  # logs of values < 0 are complex
-)                                                       # output includes initial value
+x = compute_in_parallel(coeffs, values)           # includes initial value
 ```
 
 
 ### Special Case: If No Inputs Are Negative
 
-If no inputs are negative, we don't need to cast them to complex numbers before computing their logarithms:
+If no inputs are negative, their logarithms are floats:
 
 ```python
 import torch
 import torch.nn.functional as F
 
-def compute_in_parallel_special_case(log_coeffs, log_values):
+def compute_in_parallel_special_case(coeffs, values):
+    log_coeffs = torch.log(coeffs)
+    log_values = torch.log(values)
     a_star = F.pad(torch.cumsum(log_coeffs, dim=-1), (1, 0))              # eq (2) in paper
     log_x0_plus_b_star = torch.logcumsumexp(log_values - a_star, dim=-1)  # eq (7) in paper
     log_x = a_star + log_x0_plus_b_star                                   # eq (1) in paper
@@ -89,14 +95,11 @@ device = 'cuda:0'     # change as necessary
 seq_len = 10_000_000  # change as you wish
 
 # Generate some random input data:
-coeffs = torch.rand(seq_len, device=device) + 1e-5   # eps for numerical stability
-values = torch.rand(1 + seq_len, device=device) * 3  # all values >= 0
+coeffs = torch.rand(seq_len, device=device) + 1e-6    # eps for numerical stability
+values = torch.rand(1 + seq_len, device=device) * 3   # all values >= 0
 
 # Compute the sequence:
-x = compute_in_parallel_special_case(
-    log_coeffs=coeffs.log(),  # no need to cast to complex
-    log_values=values.log(),  # no need to cast to complex
-)                             # output includes initial value
+x = compute_in_parallel_special_case(coeffs, values)  # includes initial value
 ```
 
 
