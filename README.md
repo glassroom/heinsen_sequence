@@ -122,6 +122,11 @@ As always, you should test all available options to find out which one will work
 See [this thread](https://github.com/glassroom/heinsen_sequence/issues/1).
 
 
+## Non-Diagonal Recurrences
+
+For computing _non-diagonal_ recurrences of the form $x_t = W_t x_{t-1} + b_t$ in parallel, where $W_t \in \mathbb{R}^{d \times d}$, $b_t \in \mathbb{R}^d$, and initial value $x_0 \in \mathbb{R}^d$, take a look at [this implementation of parallel scan](https://github.com/glassroom/torch_parallel_scan).
+
+
 ## Citing
 
 ```
